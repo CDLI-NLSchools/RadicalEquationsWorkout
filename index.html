@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radical Equations Workout — Math 2201</title>
+<style>
+  :root{
+    --ink:#1c2430; --muted:#5a6572; --accent:#0b5cad; --accent-dark:#084a8a;
+    --ok:#177245; --bad:#b3261e; --card:#ffffff; --bg:#eef2f6; --line:#d4dce4;
+    --soft:#f4f8fc; --note-bg:#fff8e1; --note-line:#e3c565;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.45;}
+  .wrap{max-width:720px;margin:0 auto;padding:16px 14px 48px;}
+  header{margin:10px 0 14px;}
+  h1{font-size:1.7rem;margin:0 0 2px;}
+  .subtitle{color:var(--muted);font-size:1rem;margin:0 0 8px;}
+  .instruction{font-size:1.02rem;margin:0;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(20,40,60,.06);}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+  .controls label{font-weight:600;}
+  select,button{font:inherit;}
+  select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;min-height:44px;}
+  button{cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:#fff;
+    padding:9px 16px;border-radius:8px;min-height:44px;font-weight:600;}
+  button:hover{background:var(--accent-dark);}
+  button.secondary{background:#fff;color:var(--accent);}
+  button.secondary:hover{background:var(--soft);}
+  button:disabled{opacity:.55;cursor:default;}
+  button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #f2b01e;outline-offset:2px;}
+  .score{margin-left:auto;color:var(--muted);font-size:.95rem;}
+  .score strong{color:var(--ink);}
+  .equation{font-size:1.45rem;text-align:center;padding:10px 6px 4px;overflow-x:auto;}
+  .eq-label{text-align:center;color:var(--muted);font-size:.92rem;margin:0;}
+  .kindtag{display:inline-block;background:var(--soft);border:1px solid var(--line);
+    border-radius:999px;padding:2px 10px;font-size:.85rem;color:var(--accent-dark);font-weight:600;}
+  .context{font-size:1.02rem;margin:6px 0 0;}
+  .step{border:1px solid var(--line);border-radius:10px;padding:14px;margin:12px 0;background:#fff;}
+  .step.done{border-color:var(--ok);background:#f2faf5;}
+  .step h3{margin:0 0 6px;font-size:1.05rem;}
+  .step .prompt{margin:0 0 10px;}
+  .fields{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
+  .field{display:flex;flex-direction:column;gap:3px;}
+  .field label{font-size:.85rem;color:var(--muted);font-weight:600;}
+  .field input{width:86px;padding:9px 10px;font:inherit;font-size:1.05rem;border:1px solid var(--line);
+    border-radius:8px;min-height:44px;}
+  .field input:disabled{background:var(--soft);color:var(--muted);}
+  .stepbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  .feedback{margin:10px 0 0;min-height:1.3em;font-weight:600;}
+  .feedback.ok{color:var(--ok);}
+  .feedback.bad{color:var(--bad);}
+  .rad{display:inline-block;border-top:2px solid currentColor;padding:0 2px;margin-left:1px;}
+  .solution{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:14px;}
+  .solution h3{margin:0 0 8px;}
+  .solution .line{font-size:1.08rem;padding:3px 0;border-bottom:1px dashed var(--line);}
+  .solution .line:last-child{border-bottom:none;}
+  .note{background:var(--note-bg);border:1px solid var(--note-line);border-radius:10px;
+    padding:12px 14px;margin:12px 0;font-size:.99rem;}
+  .note strong{color:#7a5b00;}
+  .reveal{margin:8px 0 0;padding:10px 12px;background:var(--soft);border:1px dashed var(--line);border-radius:8px;}
+  .reveal .line{font-size:1.02rem;padding:2px 0;}
+  .hidden{display:none !important;}
+  @media (max-width:480px){
+    h1{font-size:1.4rem;}
+    .equation{font-size:1.2rem;}
+    .field input{width:74px;}
+    .score{margin-left:0;width:100%;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Radical Equations Workout</h1>
+    <p class="subtitle">Math 2201 · Unit 4 — Radicals (Section 4)</p>
+    <p class="instruction">Solve each equation, then <strong>check every candidate</strong> in the original equation — squaring can create solutions that don't actually work.</p>
+  </header>
+
+  <div class="card controls" role="group" aria-label="Session controls">
+    <label for="modeSelect">Mode</label>
+    <select id="modeSelect">
+      <option value="m1" selected>Mode 1 · Solve — square roots</option>
+      <option value="m2">Mode 2 · Extraneous traps</option>
+      <option value="m3">Mode 3 · Solve — cube roots</option>
+      <option value="m4">Mode 4 · Formula problems</option>
+      <option value="mixed">Mixed set</option>
+    </select>
+    <button type="button" id="newSessionBtn">New session</button>
+    <span class="score" id="scoreLine" aria-live="polite"></span>
+  </div>
+
+  <main class="card" id="problemCard">
+    <p class="eq-label"><span class="kindtag" id="kindTag"></span></p>
+    <p class="eq-label" id="itemProgress"></p>
+    <p class="context hidden" id="contextText"></p>
+    <div class="equation" id="equationDisplay"></div>
+    <p class="eq-label" id="equationHint"></p>
+    <div id="stageArea"></div>
+    <div class="solution hidden" id="solutionPanel" aria-live="polite">
+      <h3 id="solutionTitle">Solution</h3>
+      <div id="solutionLines"></div>
+      <div class="stepbtns">
+        <button type="button" id="nextItemBtn">Next item</button>
+      </div>
+    </div>
+    <div class="solution hidden" id="sessionPanel" aria-live="polite">
+      <h3>Session complete</h3>
+      <div id="sessionLines"></div>
+      <div class="stepbtns">
+        <button type="button" id="againBtn">Start a new session</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+"use strict";
+// ==GENERATOR==
+// Pure generator / answer-key logic for RadicalEquationsWorkout. No DOM access
+// in this section. Every equation is built backwards from chosen integer
+// solutions so all candidates are integers; solveKey() then re-derives the
+// candidates and their valid/extraneous verdicts from the equation's
+// parameters alone (algebra + exact substitution), independent of how the
+// equation was constructed.
+
+function randInt(min, max) { // inclusive
+  return min + Math.floor(Math.random() * (max - min + 1));
+}
+function pickFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+// Exact integer square root: returns r with r*r === n, or null.
+function isqrtExact(n) {
+  if (n < 0) return null;
+  var r = Math.round(Math.sqrt(n));
+  while (r * r > n) r--;
+  while ((r + 1) * (r + 1) <= n) r++;
+  return r * r === n ? r : null;
+}
+// Exact integer cube root (handles negatives): returns r with r^3 === n, or null.
+function icbrtExact(n) {
+  var r = Math.round(Math.cbrt(n));
+  while (r * r * r > n) r--;
+  while ((r + 1) * (r + 1) * (r + 1) <= n) r++;
+  return r * r * r === n ? r : null;
+}
+
+function numTxt(n) { return String(n).replace(/-/g, "−"); }
+function fmtSigned(b) { // " + 4" / " − 4" / "" for use after a variable term
+  if (b > 0) return " + " + b;
+  if (b < 0) return " − " + Math.abs(b);
+  return "";
+}
+// "3x + 4" style linear expression (a is the variable coefficient).
+function fmtLin(a, b, v) {
+  return (a === 1 ? "" : String(a)) + v + fmtSigned(b);
+}
+// Right-hand side of a linear-RHS equation: "x − 3" style.
+function fmtRHSLinear(v, q) { return v + fmtSigned(q); }
+// "x² − 6x + 9" style quadratic x² + Bx + C.
+function fmtPoly(B, C) {
+  var s = "x²";
+  if (B === 1) s += " + x";
+  else if (B === -1) s += " − x";
+  else if (B > 0) s += " + " + B + "x";
+  else if (B < 0) s += " − " + Math.abs(B) + "x";
+  s += fmtSigned(C);
+  return s;
+}
+// "(x − 3)" style factor for root r.
+function fmtFactor(r) {
+  if (r > 0) return "(x − " + r + ")";
+  if (r < 0) return "(x + " + Math.abs(r) + ")";
+  return "(x)";
+}
+function radicalSymbol(index) { return index === 3 ? "∛" : "√"; }
+
+// Derive candidates + verdicts from equation parameters only.
+// eq = {index:2|3, a, b, rhs:{kind:'const',k} | {kind:'linear',q}}
+// Each candidate: {value, radicand, ls, rhsValue, valid}.
+// ls is the exact value of the radical at the candidate (null if not exact).
+function solveKey(eq) {
+  var cands = [];
+  if (eq.index === 3) {
+    var k3 = eq.rhs.k;
+    var num3 = k3 * k3 * k3 - eq.b;
+    if (num3 % eq.a !== 0) return null;
+    var x3 = num3 / eq.a;
+    var rad3 = eq.a * x3 + eq.b;
+    var ls3 = icbrtExact(rad3);
+    cands.push({ value: x3, radicand: rad3, ls: ls3, rhsValue: k3, valid: ls3 === k3 });
+    return cands;
+  }
+  if (eq.rhs.kind === "const") {
+    var k = eq.rhs.k;
+    var num = k * k - eq.b;
+    if (num % eq.a !== 0) return null;
+    var x = num / eq.a;
+    var rad = eq.a * x + eq.b;
+    var ls = isqrtExact(rad);
+    cands.push({ value: x, radicand: rad, ls: ls, rhsValue: k, valid: ls === k });
+    return cands;
+  }
+  // Square-root = linear: (x + q)² = a·x + b  ->  x² + (2q − a)x + (q² − b) = 0
+  var q = eq.rhs.q;
+  var B = 2 * q - eq.a;
+  var C = q * q - eq.b;
+  var D = B * B - 4 * C;
+  var s = isqrtExact(D);
+  if (s === null) return null;
+  if ((-B - s) % 2 !== 0) return null;
+  var roots = [(-B - s) / 2, (-B + s) / 2];
+  if (roots[0] === roots[1]) roots = [roots[0]];
+  roots.forEach(function (xv) {
+    var r = eq.a * xv + eq.b;
+    var l = isqrtExact(r);
+    var rv = xv + q;
+    cands.push({ value: xv, radicand: r, ls: l, rhsValue: rv, valid: l !== null && l === rv });
+  });
+  return cands;
+}
+
+// "3x = 25 − 4 = 21, so x = 7" style solve line for a·v + b = target.
+function solveLine(item, target) {
+  var rem = target - item.b;
+  var x0 = item.candidates[0].value;
+  var v = item.varName;
+  var move = item.b >= 0 ? " − " + item.b : " + " + Math.abs(item.b);
+  if (item.a === 1) {
+    return "Solve: " + v + " = " + target + move + " = " + numTxt(x0) + ".";
+  }
+  return "Solve: " + item.a + v + " = " + target + move + " = " + rem +
+    ", so " + v + " = " + rem + " ÷ " + item.a + " = " + numTxt(x0) + ".";
+}
+
+// Step decomposition lines (isolate -> square/cube -> solve -> check),
+// also used verbatim by "Show this step" and the worked examples.
+function buildStepLines(item) {
+  var v = item.varName;
+  var lin = fmtLin(item.a, item.b, v);
+  var lines = [];
+  if (item.shape === "formula") {
+    lines.push("Substitute " + item.context.fname + " = " + item.rhs.k +
+      " into the formula: √(" + lin + ") = " + item.rhs.k + ".");
+  }
+  if (item.index === 3) {
+    var k3 = item.rhs.k;
+    var cube = k3 * k3 * k3;
+    lines.push("The cube root is already isolated. Cube both sides: " +
+      lin + " = " + numTxt(k3) + "³ = " + numTxt(cube) + ".");
+    lines.push(solveLine(item, cube));
+    lines.push("Candidate: " + v + " = " + numTxt(item.candidates[0].value) +
+      ". Check it in Stage 2.");
+    return lines;
+  }
+  if (item.rhs.kind === "const") {
+    var k = item.rhs.k;
+    var sq = k * k;
+    lines.push("The radical is already isolated. Square both sides: " +
+      lin + " = " + k + "² = " + sq + ".");
+    lines.push(solveLine(item, sq));
+    lines.push("Candidate: " + v + " = " + numTxt(item.candidates[0].value) +
+      ". Check it in Stage 2 — a candidate is not a solution until it checks.");
+    return lines;
+  }
+  // Square root = linear right-hand side.
+  var q = item.rhs.q;
+  var rhsTxt = fmtRHSLinear(v, q);
+  lines.push("The radical is already isolated. Square both sides: " +
+    lin + " = (" + rhsTxt + ")² = " + fmtPoly(2 * q, q * q) + ".");
+  var B = 2 * q - item.a;
+  var C = q * q - item.b;
+  lines.push("Bring all terms to one side: " + fmtPoly(B, C) + " = 0.");
+  var r1 = item.candidates[0].value;
+  var r2 = item.candidates[1].value;
+  lines.push("Factor: " + fmtFactor(r1) + fmtFactor(r2) + " = 0, so " +
+    v + " = " + numTxt(r1) + " or " + v + " = " + numTxt(r2) + ".");
+  lines.push("Candidates: " + v + " = " + numTxt(r1) + " and " + v + " = " + numTxt(r2) +
+    ". Squaring can introduce extraneous solutions, so check each candidate in Stage 2.");
+  return lines;
+}
+
+// Full plain-text equation, e.g. "√(3x + 4) = 5", "p(t) = √(5t + 11), p = 6".
+function equationText(item) {
+  var rad = radicalSymbol(item.index) + "(" + fmtLin(item.a, item.b, item.varName) + ")";
+  if (item.shape === "formula") {
+    return item.context.fname + "(" + item.varName + ") = " + rad +
+      ", " + item.context.fname + " = " + item.rhs.k;
+  }
+  var rhs = item.rhs.kind === "const" ? String(item.rhs.k) : fmtRHSLinear(item.varName, item.rhs.q);
+  return rad + " = " + rhs;
+}
+
+// Assemble an item object (or return null if the parameters don't solve cleanly).
+function makeItem(shape, eq, opts) {
+  var cands = solveKey(eq);
+  if (!cands) return null;
+  var item = {
+    shape: shape,
+    index: eq.index,
+    a: eq.a,
+    b: eq.b,
+    rhs: eq.rhs,
+    varName: opts.varName,
+    context: opts.context || null,
+    candidates: cands
+  };
+  item.mode = { sqrtConst: 1, sqrtLinear: 1, trap: 2, cube: 3, formula: 4 }[shape];
+  item.stepLines = buildStepLines(item);
+  var rhsId = eq.rhs.kind === "const" ? "k" + eq.rhs.k : "q" + eq.rhs.q;
+  item.id = shape + "|" + (item.context ? item.context.id : "-") + "|" +
+    eq.a + "," + eq.b + "," + rhsId;
+  item.text = equationText(item);
+  return item;
+}
+
+// Parameter triples (a, b, k) that appear in the course checkpoints/test or in
+// this app's own worked samples — generated items must never reproduce them.
+var EXCLUDED = {
+  sqrtConst: { "1,4,6": 1, "1,9,7": 1, "1,2,5": 1, "3,4,5": 1 },
+  cube: { "1,-5,2": 1, "1,-2,3": 1, "1,-1,4": 1, "2,-5,3": 1 },
+  formula: { "2,36,10": 1, "3,19,8": 1, "5,11,6": 1 }
+};
+function excludedFor(shape, a, b, k) {
+  var table = EXCLUDED[shape];
+  return !!(table && table[a + "," + b + "," + k]);
+}
+
+// Mode 1a: √(a·x + b) = k, built backwards from a chosen solution x0.
+function genSqrtConst() {
+  for (var tries = 0; tries < 5000; tries++) {
+    var a = randInt(1, 5);
+    var k = randInt(2, 12);
+    var x0 = randInt(2, 20);
+    var b = k * k - a * x0;
+    if (b === 0 || Math.abs(b) > 60) continue;
+    if (excludedFor("sqrtConst", a, b, k)) continue;
+    var item = makeItem("sqrtConst",
+      { index: 2, a: a, b: b, rhs: { kind: "const", k: k } }, { varName: "x" });
+    if (!item) continue;
+    if (item.candidates.length !== 1 || !item.candidates[0].valid) continue;
+    if (item.candidates[0].value !== x0) continue;
+    return item;
+  }
+  throw new Error("sqrtConst generation failed");
+}
+
+// Mode 1b (Mixed sets): √(a·x + b) = x + q with two distinct integer
+// candidates, BOTH valid. Built backwards from the two roots x1 < x2:
+// a = x1 + x2 + 2q and b = (x1 + q)² − a·x1 make both roots satisfy the
+// squared equation, and x_i + q >= 1 makes both satisfy the original.
+function genSqrtLinear() {
+  for (var tries = 0; tries < 5000; tries++) {
+    var q = randInt(-4, 4);
+    var x1 = randInt(0, 16);
+    var x2 = randInt(0, 16);
+    if (x1 === x2) continue;
+    if (x1 > x2) { var t = x1; x1 = x2; x2 = t; }
+    if (x1 + q < 1 || x2 + q < 1) continue;
+    var a = x1 + x2 + 2 * q;
+    if (a < 1 || a > 14) continue;
+    var b = (x1 + q) * (x1 + q) - a * x1;
+    if (b === 0 || Math.abs(b) > 90) continue;
+    if (a === 3 && b === -2 && q === 0) continue; // the worked sample itself
+    var item = makeItem("sqrtLinear",
+      { index: 2, a: a, b: b, rhs: { kind: "linear", q: q } }, { varName: "x" });
+    if (!item) continue;
+    if (item.candidates.length !== 2) continue;
+    if (!item.candidates.every(function (c) { return c.valid; })) continue;
+    return item;
+  }
+  throw new Error("sqrtLinear generation failed");
+}
+
+// Mode 2: √(a·x + b) = x − d, built backwards from one valid candidate xv
+// (xv − d > 0) and one extraneous candidate xe (xe − d < 0). Exactly one
+// candidate fails the check, by construction.
+function genTrap() {
+  for (var tries = 0; tries < 5000; tries++) {
+    var d = randInt(1, 6);
+    var xv = randInt(d + 2, d + 14);
+    var xe = randInt(-3, d - 1);
+    var a = xv + xe - 2 * d;
+    if (a < 1 || a > 16) continue;
+    var b = (xv - d) * (xv - d) - a * xv;
+    if (b === 0 || Math.abs(b) > 90) continue;
+    if (a === 1 && b === 3 && d === 3) continue; // the worked sample itself
+    var item = makeItem("trap",
+      { index: 2, a: a, b: b, rhs: { kind: "linear", q: -d } }, { varName: "x" });
+    if (!item) continue;
+    if (item.candidates.length !== 2) continue;
+    var validCount = item.candidates.filter(function (c) { return c.valid; }).length;
+    if (validCount !== 1) continue;
+    return item;
+  }
+  throw new Error("trap generation failed");
+}
+
+// Mode 3: ∛(a·x + b) = k, built backwards from a chosen solution.
+// Cube roots admit negative k (negative radicands), which square roots don't.
+function genCube() {
+  var ks = [-4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7];
+  for (var tries = 0; tries < 5000; tries++) {
+    var a = randInt(1, 5);
+    var k = pickFrom(ks);
+    var x0 = randInt(1, 25);
+    var b = k * k * k - a * x0;
+    if (b === 0 || Math.abs(b) > 130) continue;
+    if (excludedFor("cube", a, b, k)) continue;
+    var item = makeItem("cube",
+      { index: 3, a: a, b: b, rhs: { kind: "const", k: k } }, { varName: "x" });
+    if (!item) continue;
+    if (item.candidates.length !== 1 || !item.candidates[0].valid) continue;
+    if (item.candidates[0].value !== x0) continue;
+    return item;
+  }
+  throw new Error("cube generation failed");
+}
+
+var FORMULA_CONTEXTS = [
+  { id: "flare", fname: "h", v: "t", unit: "metres",
+    story: "A flare is fired into the air. Its height, in metres, t seconds after firing is modelled by the formula below." },
+  { id: "drone", fname: "a", v: "t", unit: "metres",
+    story: "A drone climbs steadily after takeoff. Its altitude, in metres, t seconds after takeoff is modelled by the formula below." },
+  { id: "reservoir", fname: "d", v: "t", unit: "metres",
+    story: "After heavy rain begins, the water in a reservoir rises. The depth of water, in metres, t hours after the rain starts is modelled by the formula below." },
+  { id: "tank", fname: "w", v: "t", unit: "centimetres",
+    story: "A tank is being filled with water. The depth of water in the tank, in centimetres, t minutes after filling starts is modelled by the formula below." },
+  { id: "seedling", fname: "h", v: "d", unit: "centimetres",
+    story: "A seedling is measured as it grows. Its height, in centimetres, d days after sprouting is modelled by the formula below." },
+  { id: "balloon", fname: "h", v: "t", unit: "metres",
+    story: "A hot-air balloon rises from the ground. Its height, in metres, t seconds after liftoff is modelled by the formula below." },
+  { id: "diver", fname: "d", v: "t", unit: "metres",
+    story: "A diver descends from a platform. Her depth below the surface, in metres, t seconds after she enters the water is modelled by the formula below." }
+];
+var SAMPLE_CONTEXT = { id: "particle", fname: "p", v: "t", unit: "metres",
+  story: "A particle moves along a track. Its position, in metres, t seconds after it starts is modelled by the formula below." };
+
+// Mode 4: F(v) = √(a·v + b) with F = k given; solve for v.
+// Same backward construction as Mode 1a, dressed in a context.
+function genFormula() {
+  for (var tries = 0; tries < 5000; tries++) {
+    var ctx = pickFrom(FORMULA_CONTEXTS);
+    var a = randInt(1, 6);
+    var k = randInt(2, 12);
+    var t0 = randInt(2, 25);
+    var b = k * k - a * t0;
+    if (b === 0 || Math.abs(b) > 70) continue;
+    if (excludedFor("formula", a, b, k)) continue;
+    var item = makeItem("formula",
+      { index: 2, a: a, b: b, rhs: { kind: "const", k: k } },
+      { varName: ctx.v, context: ctx });
+    if (!item) continue;
+    if (item.candidates.length !== 1 || !item.candidates[0].valid) continue;
+    if (item.candidates[0].value !== t0) continue;
+    return item;
+  }
+  throw new Error("formula generation failed");
+}
+
+var SHAPES = ["sqrtConst", "sqrtLinear", "trap", "cube", "formula"];
+var GENERATORS = {
+  sqrtConst: genSqrtConst,
+  sqrtLinear: genSqrtLinear,
+  trap: genTrap,
+  cube: genCube,
+  formula: genFormula
+};
+function generateItem(shape) {
+  if (!GENERATORS[shape]) throw new Error("Unknown shape: " + shape);
+  return GENERATORS[shape]();
+}
+
+// The spec's sample items, used as the fully worked openers.
+function makeSampleItem(shape) {
+  var item = null;
+  if (shape === "sqrtConst") {
+    item = makeItem("sqrtConst",
+      { index: 2, a: 3, b: 4, rhs: { kind: "const", k: 5 } }, { varName: "x" });
+  } else if (shape === "sqrtLinear") {
+    item = makeItem("sqrtLinear",
+      { index: 2, a: 3, b: -2, rhs: { kind: "linear", q: 0 } }, { varName: "x" });
+  } else if (shape === "trap") {
+    item = makeItem("trap",
+      { index: 2, a: 1, b: 3, rhs: { kind: "linear", q: -3 } }, { varName: "x" });
+  } else if (shape === "cube") {
+    item = makeItem("cube",
+      { index: 3, a: 2, b: -5, rhs: { kind: "const", k: 3 } }, { varName: "x" });
+  } else if (shape === "formula") {
+    item = makeItem("formula",
+      { index: 2, a: 5, b: 11, rhs: { kind: "const", k: 6 } },
+      { varName: SAMPLE_CONTEXT.v, context: SAMPLE_CONTEXT });
+  }
+  if (!item) throw new Error("Sample failed to build: " + shape);
+  return item;
+}
+// ==END GENERATOR==
+</script>
+
+<script>
+"use strict";
+// ---- UI ----
+
+var KIND_LABELS = {
+  sqrtConst: "Solve — square roots",
+  sqrtLinear: "Solve — square root equals a line",
+  trap: "Extraneous traps",
+  cube: "Solve — cube roots",
+  formula: "Formula problem"
+};
+var SHAPE_HINTS = {
+  sqrtConst: "Square both sides, solve, then check the candidate.",
+  sqrtLinear: "Square both sides and solve the quadratic — then check BOTH candidates.",
+  trap: "Solve, then check every candidate. One of them is lying.",
+  cube: "Cube both sides, solve, then check.",
+  formula: "Substitute the given value into the formula, solve, and check."
+};
+var MODE_SAMPLE_SHAPE = { m1: "sqrtConst", m2: "trap", m3: "cube", m4: "formula" };
+var ALL_SHAPES = ["sqrtConst", "sqrtLinear", "trap", "cube", "formula"];
+
+var modeSelect = document.getElementById("modeSelect");
+var newSessionBtn = document.getElementById("newSessionBtn");
+var scoreLine = document.getElementById("scoreLine");
+var kindTag = document.getElementById("kindTag");
+var itemProgress = document.getElementById("itemProgress");
+var contextText = document.getElementById("contextText");
+var equationDisplay = document.getElementById("equationDisplay");
+var equationHint = document.getElementById("equationHint");
+var stageArea = document.getElementById("stageArea");
+var solutionPanel = document.getElementById("solutionPanel");
+var solutionTitle = document.getElementById("solutionTitle");
+var solutionLines = document.getElementById("solutionLines");
+var nextItemBtn = document.getElementById("nextItemBtn");
+var sessionPanel = document.getElementById("sessionPanel");
+var sessionLines = document.getElementById("sessionLines");
+var againBtn = document.getElementById("againBtn");
+
+var currentMode = "m1";
+var plan = [];
+var slotIdx = 0;
+var currentItem = null;
+var helpUsedItem = false;
+var totalCompleted = 0;
+var totalWithHelp = 0;
+var sessionSolved = 0;
+var sessionWithHelp = 0;
+var cubeNoteSeen = false;
+
+function escapeHTML(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+function shuffle(arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+function radicalHTML(index, inner) {
+  return (index === 3 ? "∛" : "√") + "<span class=\"rad\">" + inner + "</span>";
+}
+function equationHTML(item) {
+  var rad = radicalHTML(item.index, fmtLin(item.a, item.b, item.varName));
+  if (item.shape === "formula") {
+    return escapeHTML(item.context.fname) + "(" + item.varName + ") = " + rad;
+  }
+  var rhs = item.rhs.kind === "const"
+    ? numTxt(item.rhs.k)
+    : fmtRHSLinear(item.varName, item.rhs.q);
+  return rad + " = " + rhs;
+}
+function parseIntField(el) {
+  var v = el.value.trim();
+  if (!/^[+-]?\d+$/.test(v)) return null;
+  return parseInt(v, 10);
+}
+function makeField(id, label) {
+  var wrap = document.createElement("div");
+  wrap.className = "field";
+  var lab = document.createElement("label");
+  lab.setAttribute("for", id);
+  lab.textContent = label;
+  var input = document.createElement("input");
+  input.type = "text";
+  input.inputMode = "numeric";
+  input.autocomplete = "off";
+  input.id = id;
+  wrap.appendChild(lab);
+  wrap.appendChild(input);
+  return { wrap: wrap, input: input };
+}
+function makeFeedback() {
+  var fb = document.createElement("p");
+  fb.className = "feedback";
+  fb.setAttribute("aria-live", "polite");
+  return fb;
+}
+function setFeedback(fb, ok, text) {
+  fb.className = "feedback " + (ok ? "ok" : "bad");
+  fb.textContent = text;
+}
+
+// "3(7) + 4" style substitution text for candidate c inside the radical.
+function substInner(item, c) {
+  var base = item.a === 1 ? numTxt(c.value) : item.a + "(" + numTxt(c.value) + ")";
+  return base + fmtSigned(item.b);
+}
+// Full check sentence for one candidate, e.g.
+// "x = 1:  left side = √(1 + 3) = √(4) = 2;  right side = −2.  Left ≠ right ✗ — extraneous."
+function checkLine(item, c) {
+  var sym = radicalSymbol(item.index);
+  var s = item.varName + " = " + numTxt(c.value) + ":  left side = " +
+    sym + "(" + substInner(item, c) + ") = " + sym + "(" + numTxt(c.radicand) + ") = " +
+    numTxt(c.ls) + ";  right side = " + numTxt(c.rhsValue) + ".  ";
+  s += c.valid
+    ? "Left = right ✓ — " + item.varName + " = " + numTxt(c.value) + " is a valid solution."
+    : "Left ≠ right ✗ — " + item.varName + " = " + numTxt(c.value) + " is extraneous.";
+  return s;
+}
+function checkInfoLine(item, c) { // same facts, without the verdict (faded items)
+  var sym = radicalSymbol(item.index);
+  return item.varName + " = " + numTxt(c.value) + ":  left side = " +
+    sym + "(" + substInner(item, c) + ") = " + sym + "(" + numTxt(c.radicand) + ") = " +
+    numTxt(c.ls) + ";  right side = " + numTxt(c.rhsValue) + ".";
+}
+function solutionLine(item) {
+  var valid = item.candidates.filter(function (c) { return c.valid; });
+  var extra = item.candidates.filter(function (c) { return !c.valid; });
+  var vals = valid.map(function (c) { return item.varName + " = " + numTxt(c.value); });
+  var s;
+  if (item.shape === "formula") {
+    s = "Answer: " + item.varName + " = " + numTxt(valid[0].value) +
+      " (" + item.context.unit + ").";
+  } else if (vals.length === 1) {
+    s = "Solution: " + vals[0] + ".";
+  } else {
+    s = "Solutions: " + vals.join(" and ") + ".";
+  }
+  extra.forEach(function (c) {
+    s += "  " + item.varName + " = " + numTxt(c.value) +
+      " is extraneous — squaring produced it, but it fails the original equation.";
+  });
+  return s;
+}
+function cubeNote() {
+  var d = document.createElement("div");
+  d.className = "note";
+  d.innerHTML = "<strong>Why cube roots never have extraneous roots:</strong> " +
+    "cubing both sides preserves sign — (−2)³ = −8 and 2³ = 8 stay different. " +
+    "Squaring erases sign — (−2)² = 2² = 4 — and that is exactly where extraneous " +
+    "solutions sneak in when you solve square-root equations. We still check, every time.";
+  return d;
+}
+
+function updateScore() {
+  scoreLine.innerHTML = "Completed: <strong>" + totalCompleted + "</strong>" +
+    (totalWithHelp > 0 ? " · with help: <strong>" + totalWithHelp + "</strong>" : "") +
+    " · This session: <strong>" + sessionSolved + "</strong> solved";
+}
+
+// ---- Session planning ----
+// Every session is 10 items: a worked example, a faded example of the same
+// shape, then 8 generated items. Mixed sets keep roughly half the solved
+// items as traps.
+function buildPlan(mode) {
+  if (mode !== "mixed") {
+    var s = MODE_SAMPLE_SHAPE[mode];
+    var p = [{ kind: "worked", shape: s }, { kind: "faded", shape: s }];
+    for (var i = 0; i < 8; i++) p.push({ kind: "gen", shape: s });
+    return p;
+  }
+  var s0 = pickFrom(ALL_SHAPES);
+  var p2 = [{ kind: "worked", shape: s0 }, { kind: "faded", shape: s0 }];
+  var rest = [];
+  var trapsNeeded = s0 === "trap" ? 4 : 5; // faded + generated traps ≈ half of 9 solved
+  for (var j = 0; j < trapsNeeded; j++) rest.push("trap");
+  var others = ["sqrtConst", "sqrtLinear", "cube", "formula"];
+  while (rest.length < 8) rest.push(pickFrom(others));
+  shuffle(rest);
+  rest.forEach(function (sh) { p2.push({ kind: "gen", shape: sh }); });
+  return p2;
+}
+
+function startSession() {
+  currentMode = modeSelect.value;
+  plan = buildPlan(currentMode);
+  slotIdx = 0;
+  sessionSolved = 0;
+  sessionWithHelp = 0;
+  updateScore();
+  loadSlot();
+}
+
+function loadSlot() {
+  solutionPanel.classList.add("hidden");
+  sessionPanel.classList.add("hidden");
+  stageArea.innerHTML = "";
+  if (slotIdx >= plan.length) { showSessionSummary(); return; }
+  var slot = plan[slotIdx];
+  var item = slot.kind === "worked" ? makeSampleItem(slot.shape) : generateItem(slot.shape);
+  currentItem = item;
+  helpUsedItem = false;
+
+  kindTag.textContent = KIND_LABELS[item.shape];
+  var slotLabel = slot.kind === "worked" ? "Worked example"
+    : slot.kind === "faded" ? "Faded example" : "Practice";
+  itemProgress.textContent = "Item " + (slotIdx + 1) + " of " + plan.length + " · " + slotLabel;
+
+  if (item.shape === "formula") {
+    contextText.textContent = item.context.story;
+    contextText.classList.remove("hidden");
+    equationHint.textContent = "Find the value of " + item.varName + " when " +
+      item.context.fname + " = " + item.rhs.k + " " + item.context.unit + ".";
+  } else {
+    contextText.classList.add("hidden");
+    contextText.textContent = "";
+    equationHint.textContent = SHAPE_HINTS[item.shape];
+  }
+  equationDisplay.innerHTML = equationHTML(item);
+
+  if (item.index === 3 && !cubeNoteSeen) {
+    stageArea.appendChild(cubeNote());
+    cubeNoteSeen = true;
+  }
+
+  if (slot.kind === "worked") renderWorked(item);
+  else if (slot.kind === "faded") renderFaded(item);
+  else renderStaged(item);
+}
+
+function showSessionSummary() {
+  kindTag.textContent = "Session summary";
+  itemProgress.textContent = "";
+  contextText.classList.add("hidden");
+  equationDisplay.innerHTML = "";
+  equationHint.textContent = "";
+  sessionLines.innerHTML = "";
+  var lines = [
+    "You solved " + sessionSolved + " of 9 practice items" +
+      (sessionWithHelp > 0 ? " (" + sessionWithHelp + " with a step shown)" : "") +
+      ", after studying the worked example.",
+    "The habit that matters: solve, substitute, verdict — every candidate, every time."
+  ];
+  lines.forEach(function (t) {
+    var d = document.createElement("div");
+    d.className = "line";
+    d.textContent = t;
+    sessionLines.appendChild(d);
+  });
+  sessionPanel.classList.remove("hidden");
+}
+
+function completeItem() {
+  sessionSolved++;
+  totalCompleted++;
+  if (helpUsedItem) { sessionWithHelp++; totalWithHelp++; }
+  updateScore();
+  solutionTitle.textContent = "Solution — how it goes";
+  solutionLines.innerHTML = "";
+  var lines = currentItem.stepLines.slice();
+  currentItem.candidates.forEach(function (c) { lines.push(checkLine(currentItem, c)); });
+  lines.push(solutionLine(currentItem));
+  lines.forEach(function (t) {
+    var d = document.createElement("div");
+    d.className = "line";
+    d.textContent = t;
+    solutionLines.appendChild(d);
+  });
+  nextItemBtn.textContent = slotIdx >= plan.length - 1 ? "Finish session" : "Next item";
+  solutionPanel.classList.remove("hidden");
+  solutionPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function advance() { slotIdx++; loadSlot(); }
+</script>
+
+<script>
+"use strict";
+// ---- Item renderers ----
+
+function renderWorked(item) {
+  var card = document.createElement("section");
+  card.className = "step";
+  var h = document.createElement("h3");
+  h.textContent = "Worked example — read it through";
+  card.appendChild(h);
+  var p = document.createElement("p");
+  p.className = "prompt";
+  p.textContent = "This one is fully solved, including the check. Study the pattern: solve, substitute, verdict.";
+  card.appendChild(p);
+  var box = document.createElement("div");
+  box.className = "solution";
+  box.style.marginTop = "0";
+  var lines = item.stepLines.slice();
+  item.candidates.forEach(function (c) { lines.push(checkLine(item, c)); });
+  lines.push(solutionLine(item));
+  lines.forEach(function (t) {
+    var d = document.createElement("div");
+    d.className = "line";
+    d.textContent = t;
+    box.appendChild(d);
+  });
+  card.appendChild(box);
+  var btns = document.createElement("div");
+  btns.className = "stepbtns";
+  var btn = document.createElement("button");
+  btn.type = "button";
+  btn.textContent = "Got it — try the faded one";
+  btn.addEventListener("click", advance);
+  btns.appendChild(btn);
+  card.appendChild(btns);
+  stageArea.appendChild(card);
+}
+
+// A pair of verdict buttons for one candidate. Calls back when the student
+// picks the correct verdict; wrong picks get comparative feedback.
+function makeVerdictControl(item, c, onCorrect) {
+  var wrap = document.createElement("div");
+  var btns = document.createElement("div");
+  btns.className = "stepbtns";
+  var validBtn = document.createElement("button");
+  validBtn.type = "button";
+  validBtn.textContent = "Valid solution";
+  var extraBtn = document.createElement("button");
+  extraBtn.type = "button";
+  extraBtn.className = "secondary";
+  extraBtn.textContent = "Extraneous — reject it";
+  btns.appendChild(validBtn);
+  btns.appendChild(extraBtn);
+  var fb = makeFeedback();
+  wrap.appendChild(btns);
+  wrap.appendChild(fb);
+  var done = false;
+  function pick(saysValid) {
+    if (done) return;
+    if (saysValid === c.valid) {
+      done = true;
+      validBtn.disabled = true;
+      extraBtn.disabled = true;
+      setFeedback(fb, true, "✓ Correct. " + checkLine(item, c));
+      onCorrect();
+    } else {
+      setFeedback(fb, false, "✗ Compare the two sides: left side is " + numTxt(c.ls) +
+        " and right side is " + numTxt(c.rhsValue) +
+        ". Equal sides mean the candidate works; unequal sides mean it is extraneous.");
+    }
+  }
+  validBtn.addEventListener("click", function () { pick(true); });
+  extraBtn.addEventListener("click", function () { pick(false); });
+  return wrap;
+}
+
+function renderFaded(item) {
+  var card = document.createElement("section");
+  card.className = "step";
+  var h = document.createElement("h3");
+  h.textContent = "Faded example — the last call is yours";
+  card.appendChild(h);
+  var p = document.createElement("p");
+  p.className = "prompt";
+  var candTxt = item.candidates.map(function (c) {
+    return item.varName + " = " + numTxt(c.value);
+  }).join(" and ");
+  p.textContent = "The solving is done for you, and so is each substitution. " +
+    "Candidate(s): " + candTxt + ". Your job is the verdict for each one.";
+  card.appendChild(p);
+  var remaining = item.candidates.length;
+  item.candidates.forEach(function (c) {
+    var line = document.createElement("p");
+    line.className = "prompt";
+    line.textContent = "Check: " + checkInfoLine(item, c);
+    card.appendChild(line);
+    card.appendChild(makeVerdictControl(item, c, function () {
+      remaining--;
+      if (remaining === 0) {
+        card.classList.add("done");
+        completeItem();
+      }
+    }));
+  });
+  stageArea.appendChild(card);
+}
+
+function renderStaged(item) {
+  // ---- Stage 1: solve for the candidate value(s) ----
+  var card = document.createElement("section");
+  card.className = "step";
+  var h = document.createElement("h3");
+  h.textContent = "Stage 1 — Solve";
+  card.appendChild(h);
+  var p = document.createElement("p");
+  p.className = "prompt";
+  p.textContent = item.candidates.length === 2
+    ? "Solve the equation and enter both candidate values (either order)."
+    : "Solve the equation and enter the candidate value.";
+  card.appendChild(p);
+
+  var fieldsDiv = document.createElement("div");
+  fieldsDiv.className = "fields";
+  var inputs = [];
+  for (var i = 0; i < item.candidates.length; i++) {
+    var made = makeField("cand-" + i, "Candidate " + (i + 1));
+    fieldsDiv.appendChild(made.wrap);
+    inputs.push(made.input);
+  }
+  card.appendChild(fieldsDiv);
+
+  var reveal = document.createElement("div");
+  reveal.className = "reveal hidden";
+  card.appendChild(reveal);
+
+  var btns = document.createElement("div");
+  btns.className = "stepbtns";
+  var checkBtn = document.createElement("button");
+  checkBtn.type = "button";
+  checkBtn.textContent = "Check candidates";
+  var stepBtn = document.createElement("button");
+  stepBtn.type = "button";
+  stepBtn.className = "secondary";
+  stepBtn.textContent = "Show this step";
+  btns.appendChild(checkBtn);
+  btns.appendChild(stepBtn);
+  card.appendChild(btns);
+  var fb = makeFeedback();
+  card.appendChild(fb);
+  stageArea.appendChild(card);
+
+  var revealed = 0;
+  var stage1Done = false;
+
+  function finishStage1() {
+    if (stage1Done) return;
+    stage1Done = true;
+    card.classList.add("done");
+    inputs.forEach(function (inp) { inp.disabled = true; });
+    checkBtn.disabled = true;
+    stepBtn.disabled = true;
+    buildCandidateCards(item);
+    var first = stageArea.querySelector(".candcard input");
+    if (first) first.focus();
+  }
+  checkBtn.addEventListener("click", function () {
+    var vals = [];
+    for (var j = 0; j < inputs.length; j++) {
+      var v = parseIntField(inputs[j]);
+      if (v === null) {
+        setFeedback(fb, false, "Enter a whole number in every candidate box first.");
+        return;
+      }
+      vals.push(v);
+    }
+    var keyVals = item.candidates.map(function (c) { return c.value; });
+    var match = vals.length === keyVals.length &&
+      vals.slice().sort(function (x, y) { return x - y; }).join(",") ===
+      keyVals.slice().sort(function (x, y) { return x - y; }).join(",");
+    if (match) {
+      if (revealed > 0) helpUsedItem = true;
+      setFeedback(fb, true, "✓ Candidates correct. Now check each one — Stage 2 and Stage 3, below.");
+      finishStage1();
+    } else {
+      setFeedback(fb, false, "✗ Not yet — " +
+        (item.index === 3 ? "cube" : "square") +
+        " both sides, solve, and try again. (Stuck? Show this step.)");
+    }
+  });
+  stepBtn.addEventListener("click", function () {
+    if (stage1Done) return;
+    helpUsedItem = true;
+    reveal.classList.remove("hidden");
+    var line = document.createElement("div");
+    line.className = "line";
+    line.textContent = item.stepLines[revealed];
+    reveal.appendChild(line);
+    revealed++;
+    if (revealed >= item.stepLines.length) {
+      inputs.forEach(function (inp, idx) {
+        inp.value = String(item.candidates[idx].value);
+      });
+      setFeedback(fb, true, "All steps shown — the candidates are filled in. Now the part that matters: check them below.");
+      finishStage1();
+    }
+  });
+
+  if (inputs[0]) inputs[0].focus();
+}
+
+// ---- Stages 2 and 3, one card per candidate ----
+function buildCandidateCards(item) {
+  var remaining = item.candidates.length;
+  item.candidates.forEach(function (c, idx) {
+    var card = document.createElement("section");
+    card.className = "step candcard";
+    var h = document.createElement("h3");
+    h.textContent = "Candidate " + item.varName + " = " + numTxt(c.value);
+    card.appendChild(h);
+
+    var p2 = document.createElement("p");
+    p2.className = "prompt";
+    var sym = radicalSymbol(item.index);
+    p2.textContent = "Stage 2 — Check. Substitute into the original equation: " +
+      sym + "(" + substInner(item, c) + ") = " + sym + "(" + numTxt(c.radicand) + ") = ?" +
+      "  Enter the value of the left side.";
+    card.appendChild(p2);
+    var made = makeField("ls-" + idx, "Left side");
+    var fieldsDiv = document.createElement("div");
+    fieldsDiv.className = "fields";
+    fieldsDiv.appendChild(made.wrap);
+    card.appendChild(fieldsDiv);
+    var btns2 = document.createElement("div");
+    btns2.className = "stepbtns";
+    var check2 = document.createElement("button");
+    check2.type = "button";
+    check2.textContent = "Check the substitution";
+    btns2.appendChild(check2);
+    card.appendChild(btns2);
+    var fb2 = makeFeedback();
+    card.appendChild(fb2);
+
+    var stage3 = document.createElement("div");
+    stage3.className = "hidden";
+    var p3 = document.createElement("p");
+    p3.className = "prompt";
+    p3.style.marginTop = "14px";
+    p3.textContent = "Stage 3 — Verdict. The left side is " + numTxt(c.ls) +
+      " and the right side is " + numTxt(c.rhsValue) +
+      ". Does " + item.varName + " = " + numTxt(c.value) + " satisfy the original equation?";
+    stage3.appendChild(p3);
+    card.appendChild(stage3);
+
+    check2.addEventListener("click", function () {
+      var v = parseIntField(made.input);
+      if (v === null) {
+        setFeedback(fb2, false, "Enter a whole number for the left side first.");
+        return;
+      }
+      if (v === c.ls) {
+        made.input.disabled = true;
+        check2.disabled = true;
+        setFeedback(fb2, true, "✓ Left side = " + numTxt(c.ls) + ". Now give the verdict.");
+        stage3.appendChild(makeVerdictControl(item, c, function () {
+          card.classList.add("done");
+          remaining--;
+          if (remaining === 0) completeItem();
+        }));
+        stage3.classList.remove("hidden");
+      } else {
+        setFeedback(fb2, false, "✗ Not quite — work out " + sym + "(" + numTxt(c.radicand) +
+          ") again. (What number times itself" + (item.index === 3 ? " three times" : "") +
+          " gives " + numTxt(c.radicand) + "?)");
+      }
+    });
+
+    stageArea.appendChild(card);
+  });
+}
+
+newSessionBtn.addEventListener("click", startSession);
+againBtn.addEventListener("click", startSession);
+modeSelect.addEventListener("change", startSession);
+nextItemBtn.addEventListener("click", advance);
+startSession();
+</script>
+</body>
+</html>
